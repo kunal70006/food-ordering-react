@@ -8,7 +8,7 @@ const Nav = () => {
         <ul className={styles.nav}>
           <li className={styles.navLinks}>
             <div className={styles.header}>
-              <i class="fas fa-hamburger"></i>
+              <i className="fas fa-hamburger"></i>
               <h1>FOOOD!</h1>
             </div>
           </li>
