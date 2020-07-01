@@ -43,6 +43,7 @@ const Home = () => {
     price: 0,
     size: "",
     quantity: 1,
+    img: "",
   });
 
   const handleChanges = (event, item) => {
@@ -51,6 +52,7 @@ const Home = () => {
     tempFoodItem.name = item.recipe.label;
     tempFoodItem.price =
       Math.round(item.recipe.calories / 100) * foodItem.quantity;
+    tempFoodItem.img = item.recipe.image;
     setFoodItem(tempFoodItem);
   };
 
@@ -126,11 +128,10 @@ const Home = () => {
                   <button
                     className={styles.qtyBtns}
                     onClick={(event) => {
+                      handleChanges(event, item);
                       console.log(foodItem);
-                      history.push({
-                        pathname: "/cart",
-                        id: foodItem,
-                      });
+                      localStorage.setItem(index, JSON.stringify(foodItem));
+                      history.push("/cart");
                     }}
                   >
                     Add to Cart
