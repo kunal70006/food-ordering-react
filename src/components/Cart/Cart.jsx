@@ -8,20 +8,58 @@ const Cart = () => {
 
   useEffect(() => {
     //setting the item id to retrieve the item from the api
-
     // let item = JSON.parse(localStorage.getItem("item"));
     // setItems(item);
+    /*
+ //To Change the styles of +, - & Edit btns
+  const [btnDisp, setBtnDisp] = useState({
+    display: "none",
+  });
 
-    let tempItems = [];
+  const [editBtn, setEditBtn] = useState({
+    display: "inline-block",
+  });
 
-    for (let index = 0; index < localStorage.length; index++) {
-      let key = localStorage.key(index);
-      let tempKey = key.toString();
-      let item = JSON.parse(localStorage.getItem(tempKey));
-      tempItems.push(item);
-    }
+<div className={styles.btnContainer} key={item.image}>
+                    <button
+                      className={styles.qtyBtns}
+                      style={btnDisp}
+                      onClick={() => {}}
+                    >
+                      +
+                    </button>
+                    <span>{item.quantity}</span>
+                    <button
+                      className={styles.qtyBtns}
+                      onClick={() => {
+                        setBtnDisp(editBtn);
+                        setEditBtn(btnDisp);
+                      }}
+                      style={editBtn}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className={styles.qtyBtns}
+                      style={btnDisp}
+                      onClick={() => {}}
+                    >
+                      -
+                    </button>
+                    <button
+                      className={styles.qtyBtns}
+                      style={btnDisp}
+                      onClick={(event) => {
+                        //handleChanges(event, item);
+                        setEditBtn(btnDisp);
+                        setBtnDisp(editBtn);
+                      }}
+                    >
+                      Confirm Changes?
+                    </button>
+                  </div>
 
-    setItems(tempItems);
+    */
   }, []);
   return (
     <div>

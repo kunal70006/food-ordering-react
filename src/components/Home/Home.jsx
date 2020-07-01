@@ -10,14 +10,9 @@ const Home = () => {
   const history = useHistory();
   const [items, setItems] = useState([]);
 
-  //To Change the styles of +, - & Edit btns
-  const [btnDisp, setBtnDisp] = useState({
-    display: "none",
-  });
-
-  const [editBtn, setEditBtn] = useState({
-    display: "inline-block",
-  });
+  const [isSmallPressed, setisSmallPressed] = useState(false);
+  const [isMediumPressed, setisMediumPressed] = useState(false);
+  const [isLargePressed, setisLargePressed] = useState(false);
 
   useEffect(() => {
     let tempItems = [];
@@ -43,16 +38,85 @@ const Home = () => {
       });
   }, []);
 
-  const handleChanges = () => {};
+  const handleChanges = (event, item) => {
+    event.preventDefault();
+    let tempItem = {
+      ...item,
+    };
+    if (isSmallPressed) {
+      tempItem.size = "small";
+    } else if (isMediumPressed) {
+      tempItem.size = "medium";
+    } else if (isLargePressed) {
+      tempItem.size = "large";
+    }
+    console.log(tempItem.id);
+
+    //KODE BELOW IS SAYING CANNOT READ PROPERTY UNDEFINED OF DATA
+
+    // firebase
+    //   .firestore()
+    //   .collection("cart")
+    //   .where("itemId", "==", tempItem.id)
+    //   .get()
+    //   .then((snapshot) => {
+    //     if (tempItem.size !== snapshot.docs[0].data().size) {
+    //       const itemObj = {
+    //         name: snapshot.docs[0].data().name,
+    //         image: snapshot.docs[0].data().image,
+    //         id: snapshot.docs[0].data().id,
+    //         price: snapshot.docs[0].data().price,
+    //         quantity: snapshot.docs[0].data().quantity,
+    //         size: tempItem.size,
+    //       };
+    //       firebase
+    //         .firestore()
+    //         .collection("cart")
+    //         .doc(snapshot.docs[0].id)
+    //         .update(itemObj);
+    //     }
+    //   });
+  };
+
+  const addToCart = (event, item) => {
+    event.preventDefault();
+    const itemInCartObj = {
+      name: item.name,
+      size: item.size,
+      quantity: item.quantity,
+      price: item.price,
+      image: item.image,
+      id: item.id,
+    };
+
+    firebase
+      .firestore()
+      .collection("cart")
+      .where("itemId", "==", itemInCartObj.id)
+      .get()
+      .then((doc) => {
+        //THIS IF LOOP ISNT EXECUTING
+        console.log(doc.length);
+        if (doc.length === 0) {
+          firebase
+            .firestore()
+            .collection("cart")
+            .add(itemInCartObj)
+            .then(() => {
+              alert("Item added successfully");
+            });
+        } else {
+          alert("Item already in cart");
+        }
+      });
+  };
 
   return (
     <div>
       <Nav />
       <main>
         <div className={styles.outerContainer}>
-          <h1 className={styles.heading} onClick={() => console.log(items)}>
-            Menu
-          </h1>
+          <h1 className={styles.heading}>Menu</h1>
           {items.map((item, index) => {
             return (
               <div className={styles.innerContainer} key={index}>
@@ -61,55 +125,45 @@ const Home = () => {
                   <h1>{item.name}</h1>
 
                   <div className={styles.btnContainer} key={item.name}>
-                    <button className={styles.qtyBtns}>small</button>
-                    <button className={styles.qtyBtns}>medium</button>
-                    <button className={styles.qtyBtns}>large</button>
-                  </div>
-
-                  <div className={styles.btnContainer} key={item.image}>
                     <button
                       className={styles.qtyBtns}
-                      style={btnDisp}
-                      onClick={() => {}}
-                    >
-                      +
-                    </button>
-                    <span>{item.quantity}</span>
-                    <button
-                      className={styles.qtyBtns}
-                      onClick={() => {
-                        setBtnDisp(editBtn);
-                        setEditBtn(btnDisp);
-                      }}
-                      style={editBtn}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className={styles.qtyBtns}
-                      style={btnDisp}
-                      onClick={() => {}}
-                    >
-                      -
-                    </button>
-                    <button
-                      className={styles.qtyBtns}
-                      style={btnDisp}
                       onClick={(event) => {
-                        //handleChanges(event, item);
-                        setEditBtn(btnDisp);
-                        setBtnDisp(editBtn);
+                        setisSmallPressed(true);
+                        setisMediumPressed(false);
+                        setisLargePressed(false);
+                        handleChanges(event, item);
                       }}
                     >
-                      Confirm Changes?
+                      small
+                    </button>
+                    <button
+                      className={styles.qtyBtns}
+                      onClick={(event) => {
+                        setisSmallPressed(false);
+                        setisMediumPressed(true);
+                        setisLargePressed(false);
+                        handleChanges(event, item);
+                      }}
+                    >
+                      medium
+                    </button>
+                    <button
+                      className={styles.qtyBtns}
+                      onClick={(event) => {
+                        setisSmallPressed(false);
+                        setisMediumPressed(false);
+                        setisLargePressed(true);
+                        handleChanges(event, item);
+                      }}
+                    >
+                      large
                     </button>
                   </div>
 
                   <button
                     className={styles.qtyBtns}
                     onClick={(event) => {
-                      //handleChanges(event, item);
-                      //history.push("/cart");
+                      addToCart(event, item);
                     }}
                   >
                     Add to Cart
