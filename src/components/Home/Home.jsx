@@ -2,18 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import styles from "./Home.module.css";
 
-import Nav from "../Nav/Nav";
-import Cart from "../Cart/Cart";
+import { Nav } from "../../components";
 
-const REACT_APP_ID = "7ded3bd9";
-const REACT_APP_KEY = "87a502b83b30c46bed897f74a39cacac";
+import firebase from "../../Firebase";
 
 const Home = () => {
-  //API req to dynamically get the items
-  const sampleReq = `https://api.edamam.com/search?q=chicken&app_id=${REACT_APP_ID}&app_key=${REACT_APP_KEY}`;
-
   const history = useHistory();
-
   const [items, setItems] = useState([]);
 
   //To Change the styles of +, - & Edit btns
@@ -25,70 +19,62 @@ const Home = () => {
     display: "inline-block",
   });
 
-  const getData = async () => {
-    // Using async await and fetch api to get the data and setting it using useState hook
-    const response = await fetch(sampleReq);
-    const data = await response.json();
-    console.log(data.hits);
-    setItems(data.hits);
-  };
-
   useEffect(() => {
-    getData();
+    let tempItems = [];
+    firebase
+      .firestore()
+      .collection("menuItems")
+      .get()
+      .then((docs) => {
+        docs.forEach((doc) => {
+          const itemObj = {
+            name: doc.data().name,
+            price: Math.round(doc.data().price / 100),
+            quantity: doc.data().quantity,
+            size: doc.data().size,
+            image: doc.data().imgUrl,
+            id: doc.id,
+          };
+          tempItems.push(itemObj);
+        });
+      })
+      .then(() => {
+        setItems(tempItems);
+      });
   }, []);
 
-  //Making my own object to pass to the edit component
-  let [foodItem, setFoodItem] = useState({
-    name: "",
-    price: 0,
-    size: "",
-    quantity: 1,
-    img: "",
-  });
-
-  const handleChanges = (event, item) => {
-    event.preventDefault();
-    let tempFoodItem = JSON.parse(JSON.stringify(foodItem));
-    tempFoodItem.name = item.recipe.label;
-    tempFoodItem.price =
-      Math.round(item.recipe.calories / 100) * foodItem.quantity;
-    tempFoodItem.img = item.recipe.image;
-    setFoodItem(tempFoodItem);
-  };
+  const handleChanges = () => {};
 
   return (
     <div>
       <Nav />
       <main>
         <div className={styles.outerContainer}>
-          <h1 className={styles.heading}>Menu</h1>
+          <h1 className={styles.heading} onClick={() => console.log(items)}>
+            Menu
+          </h1>
           {items.map((item, index) => {
-            let price = Math.round(item.recipe.calories / 100);
             return (
               <div className={styles.innerContainer} key={index}>
-                <img src={item.recipe.image} alt={item.recipe.label} />
+                <img src={item.image} alt={item.image} />
                 <div className={styles.textContainer}>
-                  <h1>{item.recipe.label}</h1>
+                  <h1>{item.name}</h1>
 
-                  <div className={styles.btnContainer} key={item.recipe.label}>
+                  <div className={styles.btnContainer} key={item.name}>
                     <button className={styles.qtyBtns}>small</button>
                     <button className={styles.qtyBtns}>medium</button>
                     <button className={styles.qtyBtns}>large</button>
                   </div>
 
-                  <div className={styles.btnContainer} key={item.recipe.image}>
+                  <div className={styles.btnContainer} key={item.image}>
                     <button
                       className={styles.qtyBtns}
                       style={btnDisp}
-                      onClick={() => {
-                        let tempItems = { ...foodItem };
-                        tempItems.quantity += 1;
-                        setFoodItem(tempItems);
-                      }}
+                      onClick={() => {}}
                     >
                       +
                     </button>
-                    <span>{foodItem.quantity}</span>
+                    <span>{item.quantity}</span>
                     <button
                       className={styles.qtyBtns}
                       onClick={() => {
@@ -102,13 +88,7 @@ const Home = () => {
                     <button
                       className={styles.qtyBtns}
                       style={btnDisp}
-                      onClick={() => {
-                        if (foodItem.quantity > 1) {
-                          let tempItems = { ...foodItem };
-                          tempItems.quantity -= 1;
-                          setFoodItem(tempItems);
-                        }
-                      }}
+                      onClick={() => {}}
                     >
                       -
                     </button>
@@ -116,7 +96,7 @@ const Home = () => {
                       className={styles.qtyBtns}
                       style={btnDisp}
                       onClick={(event) => {
-                        handleChanges(event, item);
+                        //handleChanges(event, item);
                         setEditBtn(btnDisp);
                         setBtnDisp(editBtn);
                       }}
@@ -128,15 +108,13 @@ const Home = () => {
                   <button
                     className={styles.qtyBtns}
                     onClick={(event) => {
-                      handleChanges(event, item);
-                      console.log(foodItem);
-                      localStorage.setItem(index, JSON.stringify(foodItem));
-                      history.push("/cart");
+                      //handleChanges(event, item);
+                      //history.push("/cart");
                     }}
                   >
                     Add to Cart
                   </button>
-                  <h1>${price * foodItem.quantity}</h1>
+                  <h1>${item.price * item.quantity}</h1>
                 </div>
               </div>
             );
