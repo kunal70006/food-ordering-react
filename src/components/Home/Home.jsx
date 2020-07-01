@@ -7,12 +7,13 @@ import { Nav } from "../../components";
 import firebase from "../../Firebase";
 
 const Home = () => {
-  const history = useHistory();
   const [items, setItems] = useState([]);
 
   const [isSmallPressed, setisSmallPressed] = useState(false);
   const [isMediumPressed, setisMediumPressed] = useState(false);
   const [isLargePressed, setisLargePressed] = useState(false);
+
+  const history = useHistory();
 
   useEffect(() => {
     let tempItems = [];
@@ -39,7 +40,6 @@ const Home = () => {
   }, []);
 
   const handleChanges = (event, item) => {
-    event.preventDefault();
     let tempItem = {
       ...item,
     };
@@ -52,30 +52,32 @@ const Home = () => {
     }
     console.log(tempItem.id);
 
-    //KODE BELOW IS SAYING CANNOT READ PROPERTY UNDEFINED OF DATA
-
-    // firebase
-    //   .firestore()
-    //   .collection("cart")
-    //   .where("itemId", "==", tempItem.id)
-    //   .get()
-    //   .then((snapshot) => {
-    //     if (tempItem.size !== snapshot.docs[0].data().size) {
-    //       const itemObj = {
-    //         name: snapshot.docs[0].data().name,
-    //         image: snapshot.docs[0].data().image,
-    //         id: snapshot.docs[0].data().id,
-    //         price: snapshot.docs[0].data().price,
-    //         quantity: snapshot.docs[0].data().quantity,
-    //         size: tempItem.size,
-    //       };
-    //       firebase
-    //         .firestore()
-    //         .collection("cart")
-    //         .doc(snapshot.docs[0].id)
-    //         .update(itemObj);
-    //     }
-    //   });
+    firebase
+      .firestore()
+      .collection("cart")
+      .where("id", "==", tempItem.id)
+      .get()
+      .then((snapshot) => {
+        if (tempItem.size !== snapshot.docs[0].data().size) {
+          const itemObj = {
+            name: snapshot.docs[0].data().name,
+            image: snapshot.docs[0].data().image,
+            id: snapshot.docs[0].data().id,
+            price: snapshot.docs[0].data().price,
+            quantity: snapshot.docs[0].data().quantity,
+            size: tempItem.size,
+          };
+          firebase
+            .firestore()
+            .collection("cart")
+            .doc(snapshot.docs[0].id)
+            .update(itemObj);
+          alert("Done");
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   };
 
   const addToCart = (event, item) => {
@@ -92,12 +94,11 @@ const Home = () => {
     firebase
       .firestore()
       .collection("cart")
-      .where("itemId", "==", itemInCartObj.id)
+      .where("id", "==", itemInCartObj.id)
       .get()
-      .then((doc) => {
-        //THIS IF LOOP ISNT EXECUTING
-        console.log(doc.length);
-        if (doc.length === 0) {
+      .then((snapshot) => {
+        console.log(snapshot.docs.length);
+        if (snapshot.docs.length === 0) {
           firebase
             .firestore()
             .collection("cart")
@@ -173,6 +174,12 @@ const Home = () => {
               </div>
             );
           })}
+          <button
+            className={styles.qtyBtns}
+            onClick={() => history.push("/cart")}
+          >
+            Checkout
+          </button>
         </div>
       </main>
     </div>
