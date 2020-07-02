@@ -1,7 +1,9 @@
 import React from "react";
+import { useHistory } from "react-router-dom";
 import styles from "./Nav.module.css";
 
 const Nav = () => {
+  const history = useHistory();
   return (
     <div>
       <nav>
@@ -16,7 +18,7 @@ const Nav = () => {
             <a href="/">Home</a>
           </li>
           <li className={styles.navLinks}>
-            <a href="/cart">Cart</a>
+            <button onClick={() => history.push("/cart")}>Cart</button>
           </li>
         </ul>
       </nav>

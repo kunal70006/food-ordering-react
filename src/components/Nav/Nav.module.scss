@@ -36,7 +36,8 @@ li:nth-child(n + 2) {
 }
 
 .navLinks {
-  a {
+  a,
+  button {
     cursor: pointer;
 
     text-decoration: none;

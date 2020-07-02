@@ -41,7 +41,8 @@ li:nth-child(n + 2) {
   color: #3f51b5;
 }
 
-.navLinks a {
+.navLinks a,
+.navLinks button {
   cursor: pointer;
   text-decoration: none;
   color: #3f51b5;
@@ -54,13 +55,15 @@ li:nth-child(n + 2) {
   transition: 0.2s ease;
 }
 
-.navLinks a:hover {
+.navLinks a:hover,
+.navLinks button:hover {
   border: 1.5px solid #3f51b5;
   background: #3f51b5;
   color: #fafafa;
 }
 
-.navLinks a:focus {
+.navLinks a:focus,
+.navLinks button:focus {
   outline: none;
 }
 /*# sourceMappingURL=Nav.module.css.map */
